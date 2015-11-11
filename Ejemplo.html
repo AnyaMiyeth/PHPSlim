@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <script src="https://cdn.datatables.net/1.10.8/js/jquery.dataTables.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.8/js/dataTables.bootstrap.min.js"></script>
+
+    </head>
+    <body>
+        <div class="container">
+            <h2>Ejemplo Jquery - AJAX </h2>
+            <table id="table_id" class="table table-condensed table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            Id
+                        </th>
+                        <th>
+                            Nombre
+                        </th>
+                        <th>
+                            Apellidos
+                        </th>
+                        <th>
+                            Acciòn
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="bodyTable">
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>
+                            <input type="text" id="txtId" class="form-control">
+                        </td>
+                        <td>
+                            <input type="text" id="txtNom" class="form-control">
+                        </td>
+                        <td>
+                            <input type="text" id="txtApe" class="form-control">
+                        </td>
+                        <td>
+                            <input type="email" id="txtEmail" class="form-control">
+                        </td>
+                        <td>
+                            <button type="button" id="BtnAdd" class="btn btn-default">Add</button>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+            
+        </div>
+        <script>
+
+    $(document).ready(function () {
+
+                $("#BtnAdd").click(function(){
+                    enviarPOST();
+                   // enviarGET();
+                });
+
+                enviarGET();
+                function enviarGET() {
+                    $.ajax({
+                        url: '/EjemploSlim/usuarios',
+                        type: 'GET',
+                        dataType: 'json',
+                        contentType: "application/json;charset=utf-8",
+                        success: function (users) {
+                            //alert(JSON.stringify(users));
+                            $("#bodyTable").empty();
+                            
+                            $.each(users, function (index, user) {
+                                $("#bodyTable").append(
+                                    "<tr><td>" + user.id +
+                                    "</td><td> " + user.nombre +
+                                    "</td><td> " + user.apellido +
+                                    "</td><td>" + user.email + "</td>" +
+                                    "<td></td></tr>"
+                                  );
+                            });
+                            //$('#table_id').dataTable();
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            alert(JSON.stringify(xhr) + '\n' + ajaxOptions + '\n' + thrownError);
+                        }
+                    });
+                }
+                function enviarPOST() {
+
+                    var user = {
+                        id: $("#txtId").val(),
+                        nombre: $("#txtNom").val(),
+                        apellido: $("#txtApe").val(),
+                        email: $("#txtEmail").val() 
+                    };
+                    $.ajax({
+                        url: '/EjemploSlim/usuarios',
+                        type: 'POST',
+                        data: JSON.stringify(user),
+                        dataType: 'json',
+                        contentType: "application/json;charset=utf-8",
+                        success: function (result) {
+                               alert(result.mensaje);
+                               if(result.estado){
+                                 $("#bodyTable").append(
+                                         "<tr><td>" + user.id +
+                                         "</td><td> " + user.nombre +
+                                         "</td><td> " + user.apellido +
+                                         "</td><td>" + user.email + "</td>" +
+                                          "<td></td></tr>"
+                                  );
+                                }
+                        },
+                        error: function (x, y, z) {
+                            alert(JSON.stringify(x) + '\n' + y + '\n' + z);
+                        }
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>
